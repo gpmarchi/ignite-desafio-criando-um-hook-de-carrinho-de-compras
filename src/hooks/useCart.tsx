@@ -34,43 +34,34 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const addProduct = async (productId: number) => {
     try {
+      let updatedCart;
+
+      const existingProduct = cart.find(product => product.id === productId);
+
+      const amount = existingProduct ? existingProduct.amount + 1 : 1
+
       const { data: stock } = await api.get<Stock>(`/stock/${productId}`);
 
-      if (stock.amount === 0) {
+      if (stock.amount < amount) {
         toast.error('Quantidade solicitada fora de estoque');
-
         return;
       }
-      
-      const existingProduct = cart.find(product => product.id === productId);      
 
       if (!existingProduct) {
         const { data: product } = await api.get(`/products/${productId}`);
 
-        const updatedCart = [...cart, { ...product, amount: 1 }];
-
-        setCart(updatedCart);
-
-        localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart));
-        
-        return;
-      }
-
-      if (stock.amount < existingProduct.amount + 1) {
-        toast.error('Quantidade solicitada fora de estoque');
-
-        return;
-      }
-
-      const updatedCart = cart.map(
-        product => {
-          if (product.id === productId) {
-            product.amount += 1;
+        updatedCart = [...cart, { ...product, amount: 1 }];
+      } else {
+        updatedCart = cart.map(
+          product => {
+            if (product.id === productId) {
+              product.amount += 1;
+            }
+  
+            return product;
           }
-
-          return product;
-        }
-      );
+        );
+      }
 
       setCart(updatedCart);
 
