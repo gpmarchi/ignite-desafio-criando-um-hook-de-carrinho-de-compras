@@ -63,7 +63,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       const updatedCart = cart.map(
         product => {
           if (product.id === productId) {
-            product.amount += 1
+            product.amount += 1;
           }
 
           return product;
