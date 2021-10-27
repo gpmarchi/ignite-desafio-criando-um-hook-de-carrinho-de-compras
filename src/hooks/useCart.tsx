@@ -75,7 +75,15 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
-      // TODO
+      const updatedCart = cart.map(product => {
+        if (product.id === productId) {
+          product.amount += amount;
+        }
+
+        return product;
+      });
+
+      setCart(updatedCart);
     } catch {
       // TODO
     }
